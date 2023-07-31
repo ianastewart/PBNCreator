@@ -12,9 +12,7 @@ import sys
 
 # Public imported modules
 from tkinter import *  # this does not load all of tkinter - it does not load the ttk modules or messagebox for instance
-from tkinter import ttk
-from tkinter import filedialog
-from tkinter import messagebox
+from tkinter import ttk, filedialog, messagebox
 from tkcalendar import DateEntry
 
 import PBNMakefiles as makefiles
@@ -111,9 +109,24 @@ def GenFiles():
             )
             return
         if Pdf_file:
-            pdf, f = pbnp.PrintPBNFile(
+            pdf, f = pbnp.print_pbn_file(
                 return_heading_data, return_hand_data, return_dd_data, no_of_boards
             )  # create pdf file to print out all the deals
+            if manual_deal:
+                pdf, f = pbnp.print_pbn_file(
+                    return_heading_data,
+                    return_hand_data,
+                    return_dd_data,
+                    no_of_boards,
+                    seats="NE",
+                )
+                pdf, f = pbnp.print_pbn_file(
+                    return_heading_data,
+                    return_hand_data,
+                    return_dd_data,
+                    no_of_boards,
+                    seats="SW",
+                )
 
         current_date += datetime.timedelta(days=7)  # advance to the following week
         mainwindow.update_idletasks()
@@ -336,7 +349,7 @@ of a duplicate bridge session so that hands can be displayed on-line.\n\n \
 
 mainwindow = Tk()
 mainwindow.title("Generate Dealing Files")
-mainwindow.geometry("400x430")
+mainwindow.geometry("440x430")
 mainwindow.resizable(False, False)
 passed_out = (
     IntVar()
@@ -406,14 +419,18 @@ pdf_file = IntVar()
 print_checkbox = Checkbutton(mainwindow, text="PDF File?", variable=pdf_file)
 print_checkbox.place(x=130, y=270)
 
+manual_deal = BooleanVar()
+manual_checkbox = Checkbutton(mainwindow, text="Manual deal", variable=manual_deal)
+manual_checkbox.place(x=130, y=310)
+
 Generate_button = Button(mainwindow, text="Generate Files", command=GenFiles, width=11)
-Generate_button.place(x=130, y=310)
+Generate_button.place(x=130, y=350)
 Generate_button["state"] = NORMAL
 
 directory_label = Label(mainwindow, text="")
-directory_label.place(x=20, y=350)
+directory_label.place(x=20, y=390)
 pb1 = ttk.Progressbar(mainwindow, orient=HORIZONTAL, length=200, mode="determinate")
-pb1.place(x=70, y=390)
+pb1.place(x=70, y=410)
 # Set up Settings menu
 menubar = Menu(mainwindow)
 Editmenu = Menu(menubar, tearoff=0)
